@@ -6,9 +6,9 @@ import {BrowserRouter} from 'react-router-dom'
 import { DataContext } from './context/DataContext.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <DataContext>
-   <BrowserRouter>
+  <BrowserRouter>
+   <DataContext>
     <App />
-   </BrowserRouter>
-  </DataContext>,
+   </DataContext>
+  </BrowserRouter>,
 )

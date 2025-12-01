@@ -1,0 +1,21 @@
+node_modules
+.env
+dist
+logs
+*.log
+coverage
+.DS_Store
+.vscode
+.idea
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+.cache
+*.sqlite
+*.sqlite3
+uploads/
+
+# Ignore IDE specific files
+*.iml
+*.suo

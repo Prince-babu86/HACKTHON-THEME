@@ -1,133 +1,189 @@
-import React, { useState } from "react";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 
-export default function PremiumNavbar() {
-  const [active, setActive] = useState("Home");
-  const [open, setOpen] = useState(false);
-  const [themeOnUi, setThemeOnUi] = useState(false); // purely visual toggle (no global feature)
+const navItems = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Projects", path: "/projects" },
+  { name: "About", path: "/about" },
+  { name: "Contact", path: "/contact" },
+];
 
-  const links = ["Home", "Products", "Pricing", "Docs", "Contact"];
+export default function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    function handleClick(e) {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   return (
-    <header className="w-full bg-white shadow-sm">
-      <nav className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* LEFT: Brand */}
-          <div className="flex items-center gap-4">
-            <a href="#" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-md">
-                {/* subtle brand mark */}
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8z" fill="rgba(255,255,255,0.12)" />
-                  <path d="M7 12a5 5 0 015-5v10a5 5 0 01-5-5z" fill="white" />
-                </svg>
-              </div>
-              <span className="font-semibold text-lg text-gray-800">FlowMate</span>
-            </a>
+    <header className="w-full bg-white border-b border-gray-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14">
+          {/* Left: logo */}
+          <div className="flex items-center gap-6">
+            <div className="text-lg font-semibold tracking-tight">Brand</div>
 
             {/* Desktop nav */}
-            <div className="hidden md:flex items-center ml-6 space-x-1">
-              {links.map((l) => (
-                <a
-                  key={l}
-                  href="#"
-                  onClick={() => setActive(l)}
-                  className={`relative px-3 py-2 text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 ${
-                    active === l
-                      ? "text-gray-900"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
-                  aria-current={active === l ? "page" : undefined}
+            <nav className="hidden md:flex items-center gap-6">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  end
+                  className={({ isActive }) =>
+                    `relative text-sm font-medium transition-colors duration-200 px-0 py-1
+                     ${isActive ? "text-black" : "text-gray-600 hover:text-black"}`
+                  }
                 >
-                  <span>{l}</span>
-                  {/* Active underline */}
-                  <span
-                    aria-hidden
-                    className={`absolute left-1/2 transform -translate-x-1/2 bottom-0 h-0.5 rounded-full transition-all duration-200 ${
-                      active === l ? "w-10 bg-gradient-to-r from-indigo-500 to-violet-500" : "w-0 bg-transparent"
-                    }`}
-                  />
-                </a>
+                  {({ isActive }) => (
+                    <>
+                      <span className="inline-block">{item.name}</span>
+
+                      {/* underline */}
+                      <span
+                        className={`absolute left-0 -bottom-1 h-[2px] bg-black transition-all duration-300
+                          ${isActive ? "w-full" : "w-0 group-hover:w-full"}`}
+                        style={{ width: isActive ? "100%" : undefined }}
+                      />
+                    </>
+                  )}
+                </NavLink>
               ))}
-            </div>
+            </nav>
           </div>
 
-          {/* RIGHT: actions */}
+          {/* Right: search + profile + mobile button */}
           <div className="flex items-center gap-4">
-            {/* Search - visual only */}
-            <div className="hidden sm:flex items-center bg-gray-100 rounded-lg px-3 py-1 shadow-sm">
+            {/* Search */}
+            <div className="hidden sm:flex items-center bg-gray-50 border border-gray-200 rounded-md px-2 py-1 text-sm">
+              <label htmlFor="nav-search" className="sr-only">
+                Search
+              </label>
+              <svg
+                className="w-4 h-4 text-gray-500 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" />
+              </svg>
+
               <input
-                type="text"
-                placeholder="Search..."
-                className="bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400 w-40"
+                id="nav-search"
+                type="search"
+                placeholder="Search"
+                className="bg-transparent outline-none text-sm placeholder-gray-400 w-40"
                 aria-label="Search"
               />
             </div>
 
-            {/* Theme toggle (UI-only) */}
-            <button
-              onClick={() => setThemeOnUi((s) => !s)}
-              aria-pressed={themeOnUi}
-              className="group relative flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
-              title="Toggle theme (visual only)"
-            >
-              <div className="w-9 h-5 rounded-full bg-gradient-to-r from-indigo-50 to-gray-50 flex items-center p-0.5 transition-colors duration-200">
+            {/* Profile */}
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen((s) => !s)}
+                className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 rounded-full p-1"
+                aria-haspopup="true"
+                aria-expanded={profileOpen}
+                aria-label="Open profile menu"
+              >
+                {/* avatar */}
+                <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center text-sm text-gray-700">
+                  <img
+                    src="https://images.unsplash.com/photo-1548142813-3d5a0fdf2f8a?q=80&w=64&auto=format&fit=crop&crop=faces"
+                    alt="avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* small name on larger screens */}
+                <span className="hidden sm:inline-block text-sm text-gray-700">Prince</span>
+              </button>
+
+              {/* Dropdown */}
+              {profileOpen && (
                 <div
-                  className={`w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ${
-                    themeOnUi ? "translate-x-4" : "translate-x-0"
-                  }`}
-                />
-              </div>
-
-              <div className="hidden sm:flex items-center text-xs text-gray-600">
-                {themeOnUi ? <Moon size={14} /> : <Sun size={14} />}
-                <span className="ml-1">{themeOnUi ? "Dark" : "Light"}</span>
-              </div>
-            </button>
-
-            {/* CTA */}
-            <a
-              href="#"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium shadow-md hover:shadow-lg transition-shadow duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
-            >
-              Try Premium
-            </a>
+                  className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-20"
+                  role="menu"
+                  aria-label="Profile options"
+                >
+                  <a href="#profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    Profile
+                  </a>
+                  <a href="#settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    Settings
+                  </a>
+                  <div className="border-t border-gray-100 my-1" />
+                  <a href="#logout" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
+                    Logout
+                  </a>
+                </div>
+              )}
+            </div>
 
             {/* Mobile menu button */}
-            <button
-              onClick={() => setOpen((o) => !o)}
-              className="md:hidden p-2 rounded-lg border border-gray-200 bg-white shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
-              aria-expanded={open}
-              aria-label="Toggle menu"
-            >
-              {open ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile nav panel */}
-        {open && (
-          <div className="mt-3 md:hidden px-2 pb-4">
-            <div className="space-y-1">
-              {links.map((l) => (
-                <a
-                  key={l}
-                  href="#"
-                  onClick={() => {
-                    setActive(l);
-                    setOpen(false);
-                  }}
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${
-                    active === l ? "text-gray-900 bg-gray-50" : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  {l}
-                </a>
-              ))}
+            <div className="md:hidden">
+              <button
+                onClick={() => setMobileOpen((s) => !s)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200"
+                aria-label="Toggle menu"
+                aria-expanded={mobileOpen}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
             </div>
           </div>
-        )}
-      </nav>
+        </div>
+      </div>
+
+      {/* Mobile menu panel */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-gray-100">
+          <div className="px-4 py-3 space-y-1">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                end
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `block text-sm py-2 rounded-md px-2 transition-colors duration-150
+                   ${isActive ? "text-black bg-gray-50" : "text-gray-600 hover:text-black hover:bg-gray-50"}`
+                }
+              >
+                {item.name}
+              </NavLink>
+            ))}
+
+            {/* mobile search */}
+            <div className="pt-2">
+              <label htmlFor="mobile-search" className="sr-only">Search</label>
+              <div className="flex items-center bg-gray-50 border border-gray-200 rounded-md px-2 py-1 text-sm">
+                <svg className="w-4 h-4 text-gray-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" />
+                </svg>
+                <input id="mobile-search" type="search" placeholder="Search" className="bg-transparent outline-none text-sm placeholder-gray-400 w-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
