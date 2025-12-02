@@ -1,147 +1,212 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+/*
+  SignUpDark.jsx (Clean Version)
+  - ONLY Sign Up Page
+  - Login button moved to BOTTOM only (not top)
+  - Forgot password removed (Signup page only)
+  - All fields stored inside a single `form` object
+  - Tailwind required
+*/
 
-// Premium SignUp component using ONE form object
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import instance from "../../config/axios.config";
 
-export default function SignUpPage() {
+export default function SignUpDark() {
   const [form, setForm] = useState({
-    fullName: '',
-    email: '',
-    password: '',
+    fullname: "",
+    email: "",
+    password: "",
+    repeatPassword: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [agree, setAgree] = useState(false);
+  const [showPwd, setShowPwd] = useState(false);
 
-  function handleChange(e) {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  }
+    setForm((f) => ({ ...f, [name]: value }));
+  };
 
-  function handleSubmit(e) {
+  const submitSignUp = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
-  }
+    if (!agree) return alert("Please agree to the privacy policy");
+    if (form.password !== form.repeatPassword)
+      return alert("Passwords do not match");
 
-  function handleGoogleSignUp() {
-    alert('Continue with Google (signup)');
-  }
+    let res = await instance.post("/auth/register", form);
+    console.log(res.data);
+
+    alert(`Signed up: ${form.fullname}`);
+  };
+
+  const GoogleLogin = async () => {
+    try {
+      window.location.href = "http://localhost:3000/auth/google";
+      let res = await instance.get("/auth/google");
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-gray-50 p-6">
-      <div className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-tr from-indigo-500 to-pink-500 shadow-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-7 h-7 text-white">
-                <path fill="currentColor" d="M12 2L2 7v6c0 5 4 9 10 9s10-4 10-9V7l-10-5z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold">YourApp</h1>
-              <p className="text-xs text-gray-500">Create your account</p>
-            </div>
-          </div>
-          <div className="text-sm text-gray-400">Welcome 👋</div>
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#07060a] p-6">
+      <div className="w-full max-w-md bg-gradient-to-br from-[#0a0a0f]/60 to-[#0f0f15]/60 rounded-2xl p-10 shadow-2xl border border-white/5">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white">
+            Get Started Now
+          </h2>
+          <p className="mt-2 text-sm text-gray-400">
+            Welcome in our service, create account to start your experience.
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        {/* Social Buttons */}
+        <div className="flex justify-center gap-3 mb-6">
+          <button className="flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e0e14] border border-white/6 text-sm shadow-sm hover:brightness-105">
+            <svg
+              className="w-4 h-4 opacity-80"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19.2 12.9c-.1-1-.7-2-1.4-2.6-1-1-2.5-1.6-4.1-1.6-1.6 0-3 .6-4.1 1.6-.8.7-1.3 1.6-1.4 2.6-.1 1.1.1 2.2.8 3 .7.8 1.7 1.3 2.8 1.3 1.1 0 2.1-.4 2.8-1.3.7-.8.9-1.9.8-3z"
+                fill="#fff"
+              />
+            </svg>
+            <span className="text-xs text-gray-200">Sign up with Apple</span>
+          </button>
+
+          <button onClick={GoogleLogin} className="flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e0e14] border border-white/6 text-sm shadow-sm hover:brightness-105">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 533.5 544.3"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill="#4285F4"
+                d="M533.5 278.4c0-18.5-1.5-36.2-4.4-53.4H272v101.1h147.4c-6.4 34.7-26 64.1-55.4 83.8v69.6h89.4c52.4-48.2 82.1-119.3 82.1-201.1z"
+              />
+              <path
+                fill="#34A853"
+                d="M272 544.3c73.7 0 135.6-24.4 180.8-66.2l-89.4-69.6c-25 17-57 27-91.4 27-70 0-129.3-47.2-150.5-110.6H31.1v69.5C76.2 487 167.9 544.3 272 544.3z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M121.5 323.9c-10.6-31.6-10.6-65.7 0-97.3V157.1H31.1c-39.9 79.8-39.9 172.9 0 252.7l90.4-86z"
+              />
+              <path
+                fill="#EA4335"
+                d="M272 107.7c39.9-.6 78.3 14.5 107.4 41.9l80.6-80.6C407.8 24.7 341.9.7 272 0 167.9 0 76.2 57.3 31.1 142.6l90.4 69.5C142.7 155 202 107.7 272 107.7z"
+              />
+            </svg>
+            <span className="text-xs text-gray-200">Sign up with Google</span>
+          </button>
+        </div>
+
+        {/* Sign Up Form */}
+        <form onSubmit={submitSignUp} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Full name</label>
+            <label className="text-sm text-gray-400 block mb-2">
+              Full name
+            </label>
             <input
-              type="text"
-              name="fullName"
-              value={form.fullName}
+              name="fullname"
+              value={form.fullname}
               onChange={handleChange}
-              required
               placeholder="John Doe"
-              className="w-full bg-transparent outline-none pb-2 border-b border-gray-300 placeholder-gray-400 text-gray-800"
+              className="w-full px-4 py-3 rounded-lg bg-transparent border border-white/6 placeholder-gray-500 text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-600/40"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Email</label>
+            <label className="text-sm text-gray-400 block mb-2">Email</label>
             <input
-              type="email"
               name="email"
+              type="email"
               value={form.email}
               onChange={handleChange}
-              required
-              placeholder="you@example.com"
-              className="w-full bg-transparent outline-none pb-2 border-b border-gray-300 placeholder-gray-400 text-gray-800"
+              placeholder="Example@gmail.com"
+              className="w-full px-4 py-3 rounded-lg bg-transparent border border-white/6 placeholder-gray-500 text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-600/40"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Password</label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                placeholder="Create a password"
-                className="w-full bg-transparent outline-none pb-2 border-b border-gray-300 placeholder-gray-400 text-gray-800"
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-gray-400 block mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPwd ? "text" : "password"}
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 rounded-lg bg-transparent border border-white/6 placeholder-gray-500 text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-600/40"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPwd((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
+                >
+                  {showPwd ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
 
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-0 top-0 mt-0.5 p-2 rounded-md"
-              >
-                {showPassword ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-7 0-1 .5-2 1.5-3" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3l18 18" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
+            <div>
+              <label className="text-sm text-gray-400 block mb-2">
+                Repeat password
+              </label>
+              <input
+                name="repeatPassword"
+                type="password"
+                value={form.repeatPassword}
+                onChange={handleChange}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 rounded-lg bg-transparent border border-white/6 placeholder-gray-500 text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-600/40"
+              />
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-pink-500 text-white font-semibold shadow-md hover:shadow-lg disabled:opacity-60"
-          >
-            {loading ? 'Creating account...' : 'Create account'}
-          </button>
+          <label className="inline-flex items-center gap-3 text-gray-400">
+            <input
+              type="checkbox"
+              checked={agree}
+              onChange={() => setAgree((a) => !a)}
+              className="w-4 h-4 rounded border-gray-600 bg-transparent"
+            />
+            <span className="text-sm">
+              I agree to the{" "}
+              <a className="underline text-gray-300" href="#">
+                privacy policy
+              </a>
+            </span>
+          </label>
 
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 uppercase">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
+          <div>
+            <button
+              type="submit"
+              className="w-full py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-500 text-white font-semibold shadow-xl hover:brightness-105 transition"
+            >
+              Sign Up
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGoogleSignUp}
-            className="w-full py-3 rounded-xl bg-white border border-gray-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center gap-3"
-          >
-            <svg width="18" height="18" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-              <path fill="#4285f4" d="M533.5 278.4c0-17.7-1.6-35.2-4.7-52H272v98.6h146.9c-6.4 34.8-25.9 64.3-55.3 84v69.7h89.3c52.2-48 82.6-119 82.6-200.3z" />
-              <path fill="#34a853" d="M272 544.3c73.4 0 135-24.3 180-65.9l-89.3-69.7c-24.8 16.6-56.7 26.5-90.7 26.5-69.7 0-128.8-47-150-110.1H31.8v69.1C76.8 486 169.2 544.3 272 544.3z" />
-              <path fill="#fbbc04" d="M122 328.1c-10.8-32.3-10.8-67 0-99.3V159.7H31.8c-39.7 77.6-39.7 169.6 0 247.2L122 328.1z" />
-              <path fill="#ea4335" d="M272 107.7c39.8-.6 77.8 13.9 106.8 40.1l80-80C405 24 343.4 0 272 0 169.2 0 76.8 58.3 31.8 159.7l90.2 69.1C143.2 154.7 202.3 107.7 272 107.7z" />
-            </svg>
-            Continue with Google
-          </button>
-
-          <p className="text-center text-sm text-gray-500">
-            Already have an account? <Link to={`/login`} href="#" className="text-indigo-600 hover:underline">Sign in</Link>
+          <p className="mt-3 text-sm text-gray-400 text-center">
+            Already have an account?
+            <Link
+              to={`/login`}
+              type="button"
+              className="text-white underline ml-1"
+            >
+              Log in
+            </Link>
           </p>
         </form>
-
-        <div className="p-4 text-xs text-gray-400 text-center border-t border-gray-100">
-          By creating an account you agree to our Terms & Privacy
-        </div>
       </div>
     </div>
   );

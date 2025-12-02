@@ -8,9 +8,9 @@ import Menubar from './components/Menubar'
 const App = () => {
   return (
     <div className='min-h-screen w-full '>
-      <ChatNavbar/>
-    <div className='flex '>
-      <Menubar/>
+      {/* <ChatNavbar/> */}
+    <div className='flex  w-full '>
+      {/* <Menubar/> */}
        <MainRoute/>
     </div>
     </div>

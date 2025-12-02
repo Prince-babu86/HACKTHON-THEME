@@ -17,12 +17,19 @@ router.post("/register", registerUser);
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+     scope: ["profile", "email"],
+     accessType: "offline",
+     prompt: "consent",
+    
+    })
 );
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false }),
+  passport.authenticate("google", { 
+     failureRedirect:"http://localhost:5173/login",
+    session: false }),
   googleAuthController
 );
 

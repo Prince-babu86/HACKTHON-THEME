@@ -59,7 +59,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const existingUser = await usermodel.findOne({ email });
+    const existingUser = await usermodel.findOne({ email }).select("-password");
     if (!existingUser) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -95,11 +95,16 @@ const googleAuthController = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    res.cookie("token", token);
-    res
-      .status(200)
-      .json({ message: "User authenticated via Google", token, user });
-    console.log(user.email);
+
+    // Set cookie first
+    res.cookie("token", token, {
+      httpOnly: false, // true only if you do not need to access from frontend
+      secure: false,
+      sameSite: "lax",
+    });
+
+    console.log("Google login:", user.email);
+
     await sendEmail(
       user.email,
       "Welcome to Our App",
@@ -107,12 +112,18 @@ const googleAuthController = async (req, res) => {
       registerSuccessEmail(
         user.fullname,
         "Hackthon Theme",
-        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y29kZSUyMGJ1aWxkaW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60"
+        "ecomart-theta.vercel.app/"
       )
     );
+
+    // redirect to frontend
+    return res.redirect("http://localhost:5173/");
+
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    console.log(error);
+    return res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 module.exports = { registerUser, loginUser, googleAuthController };
