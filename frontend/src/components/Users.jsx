@@ -86,7 +86,7 @@ export default function Users() {
   }
 
   return (
-    <div className="h-screen w-[400px] bg-white border-r border-gray-200 flex flex-col">
+    <div className="h-screen w-[450px] bg-white border-r border-gray-200 flex flex-col">
       {/* TOP */}
       <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100">
         <div className="flex items-center gap-3">

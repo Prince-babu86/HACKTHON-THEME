@@ -58,8 +58,8 @@ export default function AIHeroCenter({ onStartChat = () => {} }) {
   }, [index]);
 
   return (
-    <div className="min-h-screen  bg-white flex items-center justify-center px-4">
-      <div className="max-w-3xl text-center p-8 rounded-2xl shadow-xl border border-gray-100">
+    <div className="min-h-screen  bg-white flex items-center justify-center px-20">
+      <div className="max-w-2xl text-center p-8 rounded-2xl shadow-xl border border-gray-100">
         <div className="mb-4 inline-flex items-center gap-3 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold">
           <MessageSquare size={16} />
           AI Assistant — Premium
