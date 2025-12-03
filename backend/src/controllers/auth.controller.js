@@ -5,6 +5,8 @@ const passport = require("passport");
 const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 const { sendEmail } = require("../services/email.service");
 const registerSuccessEmail = require("../utils/registerEmailContent");
+const uploadImage = require("../services/imagekit.service");
+const { v4: uuidv4 } = require("uuid");
 
 const registerUser = async (req, res) => {
   try {
@@ -20,31 +22,43 @@ const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const usernamePart =
+      fullname.split(" ")[0].toLowerCase() + Math.floor(Math.random() * 1000);
+    let username = usernamePart;
+
     const newuser = await usermodel.create({
       fullname,
       email,
       password: hashedPassword,
       provider: "manual",
+      username,
     });
 
     const token = jwt.sign({ userId: newuser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: false, // true only if you do not need to access from frontend
+      secure: true,
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
     res
       .status(201)
       .json({ message: "User registered successfully", token, newuser });
 
-      await sendEmail(
-      newuser.email,
-      "Welcome to Our App",
-      `Hello ${newuser.fullname},\n\nThank you for signing up using Google authentication! We're excited to have you on board.\n\nBest regards,\nThe Team`,
-      registerSuccessEmail(
-        newuser.fullname,
-        "Hackthon Theme",
-        "ecomart-theta.vercel.app/"
-      )
-    );
+    //   await sendEmail(
+
+    //   newuser.email,
+    //   "Welcome to Our App",
+    //   `Hello ${newuser.fullname},\n\nThank you for signing up using Google authentication! We're excited to have you on board.\n\nBest regards,\nThe Team`,
+    //   registerSuccessEmail(
+    //     newuser.fullname,
+    //     "Hackthon Theme",
+    //     "ecomart-theta.vercel.app/"
+    //   )
+    // );
   } catch (error) {
     console.error(error);
   }
@@ -101,29 +115,43 @@ const googleAuthController = async (req, res) => {
       httpOnly: false, // true only if you do not need to access from frontend
       secure: false,
       sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
     console.log("Google login:", user.email);
 
-    await sendEmail(
-      user.email,
-      "Welcome to Our App",
-      `Hello ${user.fullname},\n\nThank you for signing up using Google authentication! We're excited to have you on board.\n\nBest regards,\nThe Team`,
-      registerSuccessEmail(
-        user.fullname,
-        "Hackthon Theme",
-        "ecomart-theta.vercel.app/"
-      )
-    );
+    // await sendEmail(
+    //   user.email,
+    //   "Welcome to Our App",
+    //   `Hello ${user.fullname},\n\nThank you for signing up using Google authentication! We're excited to have you on board.\n\nBest regards,\nThe Team`,
+    //   registerSuccessEmail(
+    //     user.fullname,
+    //     "Hackthon Theme",
+    //     "ecomart-theta.vercel.app/"
+    //   )
+    // );
 
     // redirect to frontend
     return res.redirect("http://localhost:5173/");
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server Error" });
   }
 };
 
+const updateProfile = async (req, res) => {
+  try {
+  const file = req.file;
+  let result = await uploadImage(file.buffer , `${uuidv4()}`);
+  return res.json({ message: "File received", result });
+  } catch (error) {
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
 
-module.exports = { registerUser, loginUser, googleAuthController };
+module.exports = {
+  registerUser,
+  loginUser,
+  googleAuthController,
+  updateProfile,
+};

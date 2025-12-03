@@ -18,12 +18,17 @@ passport.use(
         let profilePic = profile.photos[0].value;
 
         let user = await usermodel.findOne({ email });
+        let usernamePart = fullname
+          .split(" ")[0]
+          .toLowerCase() + Math.floor(Math.random() * 1000);
+        let username = usernamePart;
         if (!user) {
           user = await usermodel.create({
             fullname,
             email,
             profilePic,
             provider: "google",
+            username
           });
         }
 

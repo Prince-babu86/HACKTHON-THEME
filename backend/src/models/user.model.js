@@ -7,6 +7,9 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: false }, // manual signup only
     profilePic: { type: String, default: "" },
     provider: { type: String, default: "manual" }, // manual or google
+    username: { type: String, required: false, unique: true },
+    bio: { type: String, default: "" },
+    phone: { type: String, default: "" },
   },
   { timestamps: true }
 );

@@ -2,10 +2,12 @@ const express = require("express");
 const {
   registerUser,
   googleAuthController,
+  updateProfile,
 } = require("../controllers/auth.controller");
 const passport = require("passport");
 const authMiddleware = require("../middlewares/auth.middleware");
 const router = express.Router();
+const multer = require("multer");
 
 // Define your authentication routes here
 
@@ -33,9 +35,10 @@ router.get(
   googleAuthController
 );
 
+const upload = multer({storage: multer.memoryStorage()});
 
-router.get("/protected", authMiddleware , (req, res) => {
-  res.json({ message: "You have accessed a protected route" , user: req.user});
-});
+
+
+router.post("/profile/update" , authMiddleware , upload.single("profilePic") , updateProfile);
 
 module.exports = router;

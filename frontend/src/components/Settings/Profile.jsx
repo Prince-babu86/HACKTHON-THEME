@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
+import { useData } from "../../context/DataContext";
+import HomePageLoader from "../../loaders/HomePageLoader";
 
 export default function ProfileSettings() {
-  const [profile, setProfile] = useState({
-    avatar: null,
-    name: "John Doe",
-    username: "john_doe",
-    bio: "Chatting all day, coding all night.",
-    status: "online",
-    phone: "+91 98765 43210",
-    email: "johndoe@gmail.com",
-  });
+  // const [profile, setProfile] = useState({
+  //   avatar: null,
+  //   name: "John Doe",
+  //   username: "john_doe",
+  //   bio: "Chatting all day, coding all night.",
+  //   status: "online",
+  //   phone: "+91 98765 43210",
+  //   email: "johndoe@gmail.com",
+  // });
+
+  const {profile , setProfile , loading} = useData();
+
+  // const [, set] = useState(second)
+
+  if(loading || !profile){
+    // return <HomePageLoader/>;
+  }
+
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
@@ -37,7 +48,7 @@ export default function ProfileSettings() {
       <div className="flex items-center gap-6 mb-8">
         <div className="relative w-24 h-24">
           <img
-            src={profile.avatar || "https://via.placeholder.com/150"}
+            src={profile?.profilePic || "https://via.placeholder.com/150"}
             alt="avatar"
             className="w-full h-full rounded-full object-cover border"
           />
@@ -48,8 +59,8 @@ export default function ProfileSettings() {
         </div>
 
         <div>
-          <p className="text-gray-700 font-semibold">{profile.name}</p>
-          <p className="text-gray-500 text-sm">@{profile.username}</p>
+          <p className="text-gray-700 font-semibold">{profile?.fullname}</p>
+          <p className="text-gray-500 text-sm">@{profile?.username}</p>
         </div>
       </div>
 
@@ -61,7 +72,7 @@ export default function ProfileSettings() {
           <label className="text-sm text-gray-600 block mb-1">Full Name</label>
           <input
             name="name"
-            value={profile.name}
+            value={profile?.fullname}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
           />
@@ -72,7 +83,7 @@ export default function ProfileSettings() {
           <label className="text-sm text-gray-600 block mb-1">Username</label>
           <input
             name="username"
-            value={profile.username}
+            value={profile?.username}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
           />
@@ -84,7 +95,7 @@ export default function ProfileSettings() {
           <textarea
             name="bio"
             rows="3"
-            value={profile.bio}
+            value={profile?.bio}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 resize-none focus:ring-2 focus:ring-indigo-500 outline-none"
           />
@@ -95,7 +106,7 @@ export default function ProfileSettings() {
           <label className="text-sm text-gray-600 block mb-1">Status</label>
           <select
             name="status"
-            value={profile.status}
+            value={profile?.status}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
           >
@@ -111,7 +122,7 @@ export default function ProfileSettings() {
           <label className="text-sm text-gray-600 block mb-1">Phone Number</label>
           <input
             name="phone"
-            value={profile.phone}
+            value={profile?.phone}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
           />
@@ -121,7 +132,7 @@ export default function ProfileSettings() {
         <div>
           <label className="text-sm text-gray-600 block mb-1">Email</label>
           <input
-            value={profile.email}
+            value={profile?.email}
             readOnly
             className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed"
           />

@@ -1,6 +1,8 @@
 // Users.jsx
 import React, { useState, useMemo } from "react";
 import { Search, Plus, MoreVertical } from "lucide-react";
+import { useData } from "../context/DataContext";
+import UsersSkeleton from "../loaders/UsersChatLoader";
 
 /**
  * Chat-style Users sidebar component
@@ -51,7 +53,9 @@ export default function Users() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-  const filtered = useMemo(() => {
+   const {profile , setProfile , loading} = useData();
+
+   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return users;
     return users.filter(
@@ -60,6 +64,12 @@ export default function Users() {
         (u.lastMsg && u.lastMsg.toLowerCase().includes(q))
     );
   }, [users, query]);
+
+   if(loading || !profile){
+    return <UsersSkeleton rows={6}/>;
+   }
+
+  
 
   function handleAddUser() {
     // Quick demo: create a new user with timestamp id
