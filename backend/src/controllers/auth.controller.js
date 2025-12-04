@@ -35,7 +35,7 @@ const registerUser = async (req, res) => {
     });
 
     const token = jwt.sign({ userId: newuser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "8h",
     });
     res.cookie("token", token, {
       httpOnly: false, // true only if you do not need to access from frontend
@@ -107,7 +107,7 @@ const googleAuthController = async (req, res) => {
   try {
     const user = req.user; // Retrieved from Passport.js
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "8h",
     });
 
     // Set cookie first
@@ -141,9 +141,23 @@ const googleAuthController = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-  const file = req.file;
-  let result = await uploadImage(file.buffer , `${uuidv4()}`);
-  return res.json({ message: "File received", result });
+    const file = req.file;
+    const data = req.body;
+    const user = req.user;
+
+    if (data.fullname) user.fullname = data.fullname;
+    if (data.username) user.username = data.username;
+    if (data.bio) user.bio = data.bio;
+    if (data.phone) user.phone = data.phone;
+    if (data.status) user.status = data.status;
+    if (file) {
+      let result = await uploadImage(file.buffer, `${uuidv4()}`);
+      user.profilePic = result.url;
+    }
+
+    await user.save();
+
+    return res.json({ message: "File received", result, data });
   } catch (error) {
     return res.status(500).json({ message: "Server Error" });
   }

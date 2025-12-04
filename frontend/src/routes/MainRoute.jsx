@@ -9,6 +9,7 @@ import Settings from "../pages/Settings";
 import NotificationsPage from "../pages/Notifications";
 import ContactPage from "../pages/Contacts";
 import AiChat from "../pages/AiChat";
+import ChatUserPage from "../pages/ChatUserPage";
 
 const MainRoute = () => {
   return (
@@ -21,6 +22,7 @@ const MainRoute = () => {
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/contacts" element={<ContactPage />} />
         <Route path="/chats" element={< AiChat/>} />
+        <Route path="/chat/:username" element={<ChatUserPage/>} />
       </Routes>
     </>
   );

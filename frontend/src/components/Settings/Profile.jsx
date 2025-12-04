@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import HomePageLoader from "../../loaders/HomePageLoader";
+import instance from "../../config/axios.config";
+import Loader from '../../loaders/UpdateProfileLoader'
 
 export default function ProfileSettings() {
   // const [profile, setProfile] = useState({
@@ -14,7 +16,10 @@ export default function ProfileSettings() {
   //   email: "johndoe@gmail.com",
   // });
 
+
   const {profile , setProfile , loading} = useData();
+  const [file, setfile] = useState(null)
+  const [loader, setloader] = useState(false)
 
   // const [, set] = useState(second)
 
@@ -26,7 +31,8 @@ export default function ProfileSettings() {
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setProfile((p) => ({ ...p, avatar: URL.createObjectURL(file) }));
+      setfile(file);
+      setProfile((p) => ({ ...p, profilePic: URL.createObjectURL(file) }));
     }
   };
 
@@ -35,13 +41,36 @@ export default function ProfileSettings() {
     setProfile((p) => ({ ...p, [name]: value }));
   };
 
-  const saveProfile = () => {
-    console.log("Saving profile:", profile);
-    alert("Profile updated successfully!");
-  };
+ const saveProfile = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("fullname", profile.fullname);
+    formData.append("username", profile.username);
+    formData.append("bio", profile.bio);
+    formData.append("status", profile.status);
+    formData.append("phone", profile.phone);
+
+    setloader(true);
+
+    if (file) formData.append("profilePic", file); // multer file or file name same hona chahiye backend mein as well in upload.single("profilePic")
+
+    const res = await instance.put("/auth/profile/update", formData, {
+      headers:{"Content-Type":"multipart/form-data"},
+      withCredentials:true
+    });
+    setloader(false);
+    console.log(res.data);
+  } catch (err) {
+    console.log("ERR:", err.response?.data || err);
+    setloader(false);
+  }
+};
+
+  
 
   return (
-    <div className="w-[800px] mx-auto bg-white shadow-sm rounded-xl border border-gray-200 p-8">
+    <div  className="w-[800px] mx-auto bg-white shadow-sm rounded-xl border border-gray-200 p-8">
+      {loader && <Loader />}
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Profile Settings</h1>
 
       {/* Avatar */}
@@ -71,7 +100,7 @@ export default function ProfileSettings() {
         <div>
           <label className="text-sm text-gray-600 block mb-1">Full Name</label>
           <input
-            name="name"
+            name="fullname"
             value={profile?.fullname}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -146,6 +175,7 @@ export default function ProfileSettings() {
           Cancel
         </button>
         <button
+        disabled={loader}
           onClick={saveProfile}
           className="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
         >

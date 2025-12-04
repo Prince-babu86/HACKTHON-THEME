@@ -91,7 +91,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="w-full mx-auto bg-white border border-gray-200 shadow-sm rounded-xl p-8">
+    <div className="w-full min-h-screen mx-auto bg-white border border-gray-200 shadow-sm rounded-xl p-8">
       {/* Page Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

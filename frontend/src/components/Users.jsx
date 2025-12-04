@@ -3,6 +3,7 @@ import React, { useState, useMemo } from "react";
 import { Search, Plus, MoreVertical } from "lucide-react";
 import { useData } from "../context/DataContext";
 import UsersSkeleton from "../loaders/UsersChatLoader";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Chat-style Users sidebar component
@@ -54,6 +55,7 @@ export default function Users() {
   const [selectedId, setSelectedId] = useState(null);
 
    const {profile , setProfile , loading} = useData();
+   const navigate = useNavigate();
 
    const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -69,6 +71,11 @@ export default function Users() {
     return <UsersSkeleton rows={6}/>;
    }
 
+
+   
+   const navigateChat =  (username) => {
+    navigate(`/chat/${username}`)
+   }
   
 
   function handleAddUser() {
@@ -139,6 +146,7 @@ export default function Users() {
               const active = selectedId === user.id;
               return (
                 <li
+                onClick={()=>navigateChat(user.name)}
                   key={user.id}
                   className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${
                     active ? "bg-indigo-50" : ""

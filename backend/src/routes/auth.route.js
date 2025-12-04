@@ -39,6 +39,6 @@ const upload = multer({storage: multer.memoryStorage()});
 
 
 
-router.post("/profile/update" , authMiddleware , upload.single("profilePic") , updateProfile);
+router.put("/profile/update" , authMiddleware , upload.single("profilePic") , updateProfile);
 
 module.exports = router;
