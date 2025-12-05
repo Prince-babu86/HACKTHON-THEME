@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import instance from "../config/axios.config";
+import {Navigate} from 'react-router-dom'
+import Spinner from '../loaders/Spinner'
 
 export const DataProvider = createContext();
 
@@ -34,9 +36,14 @@ export const DataContext = ({ children }) => {
     setLoading(false);
   };
 
+
+
+  
+
   useEffect(() => {
     getUser();
     getContactUsers();
+    // isLoggedUser()
   }, []); // IMPORTANT → empty array so it runs only once
 
   return (
