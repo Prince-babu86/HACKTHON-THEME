@@ -1,102 +1,70 @@
-// AIHeroCenter.jsx
-// Centered light-mode hero/banner for an AI chat app.
-// - Large headline (premium, bold)
-// - Animated "AI type" loader (typing effect cycling through phrases) with caret
-// - Subtext, small CTA buttons, subtle card container in center of screen
-// - Tailwind CSS required. No dark-mode toggling — light mode only.
+// ChatEmptyBanner.jsx
+import React from "react";
+import { Paperclip, UserPlus, Sparkles } from "lucide-react";
 
-import React, { useEffect, useState } from 'react';
-import { MessageSquare, Play } from 'lucide-react';
-
-const phrases = [
-  'Summarize long conversations',
-  'Write code snippets',
-  'Draft emails in your tone',
-  'Ask follow-up questions',
-];
-
-export default function AIHeroCenter({ onStartChat = () => {} }) {
-  const [index, setIndex] = useState(0);
-  const [display, setDisplay] = useState('');
-  const [typing, setTyping] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    let charIndex = 0;
-    const currentPhrase = phrases[index];
-
-    function type() {
-      if (!mounted) return;
-      if (charIndex <= currentPhrase.length) {
-        setDisplay(currentPhrase.slice(0, charIndex));
-        charIndex += 1;
-        setTyping(true);
-        setTimeout(type, 60);
-      } else {
-        // pause then delete
-        setTyping(false);
-        setTimeout(() => deleteText(), 900);
-      }
-    }
-
-    function deleteText() {
-      if (!mounted) return;
-      if (charIndex > 0) {
-        charIndex -= 1;
-        setDisplay(currentPhrase.slice(0, charIndex));
-        setTyping(true);
-        setTimeout(deleteText, 30);
-      } else {
-        // next phrase
-        setTyping(false);
-        setIndex((i) => (i + 1) % phrases.length);
-      }
-    }
-
-    type();
-    return () => { mounted = false; };
-  }, [index]);
-
+export default function ChatEmptyBanner() {
   return (
-    <div className="min-h-screen  bg-white flex items-center justify-center px-20">
-      <div className="max-w-2xl text-center p-8 rounded-2xl shadow-xl border border-gray-100">
-        <div className="mb-4 inline-flex items-center gap-3 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold">
-          <MessageSquare size={16} />
-          AI Assistant — Premium
+    <div className=" w-4xl h-full bg-gradient-to-b from-slate-50 via-white to-slate-100 flex items-center justify-center">
+      {/* subtle animated glow behind cards */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="w-72 h-72 bg-indigo-200/40 blur-3xl rounded-full mx-auto mt-10 animate-pulse" />
+      </div>
+
+      <div className="relative flex flex-col items-center gap-8">
+        {/* Title */}
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl font-semibold text-slate-900">
+            Start a new conversation
+          </h1>
+          <p className="text-sm text-slate-500">
+            Share files, add people or ask our AI assistant right from here.
+          </p>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
-          Your AI co-pilot for <span className="text-indigo-600">clearer conversations</span>
-        </h1>
-
-        <p className="mt-4 text-lg text-gray-600">
-          <span className="inline-block mr-2">{display}</span>
-          <span className={`inline-block align-middle ml-1 w-1 h-6 bg-gray-900 animate-pulse ${typing ? '' : 'opacity-50'}`} style={{display:'inline-block'}} aria-hidden />
-        </p>
-
-        <p className="mt-4 text-sm text-gray-500 max-w-xl mx-auto">
-          Let the AI summarize, draft, and assist — right where your team communicates. Fast, private, and tuned to your voice.
-        </p>
-
-        <div className="mt-6 flex items-center justify-center gap-3">
-          <button
-            onClick={onStartChat}
-            className="inline-flex items-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-lg shadow-md text-sm font-medium"
-          >
-            <Play size={16} />
-            Start Chat
-          </button>
-
-          <button
-            onClick={() => alert('Learn more')}
-            className="inline-flex items-center gap-2 bg-white border border-gray-200 px-4 py-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
-          >
-            Learn more
-          </button>
+        {/* Action cards */}
+        <div className="flex items-center gap-6">
+          <ActionCard
+            icon={<Paperclip className="w-7 h-7" />}
+            label="Send document"
+          />
+          <ActionCard
+            icon={<UserPlus className="w-7 h-7" />}
+            label="Add contact"
+          />
+          <ActionCard
+            icon={<Sparkles className="w-7 h-7" />}
+            label="Ask AI"
+            highlight
+          />
         </div>
-
-        <div className="mt-6 text-xs text-gray-400">Try prompts: <kbd className="px-2 py-1 bg-gray-100 rounded">/summarize</kbd> <kbd className="px-2 py-1 bg-gray-100 rounded">/rewrite</kbd></div>
       </div>
     </div>
+  );
+}
+
+function ActionCard({ icon, label, highlight = false }) {
+  return (
+    <button
+      className={`
+        group relative w-32 h-32 rounded-2xl
+        bg-white shadow-sm border border-slate-200
+        flex flex-col items-center justify-center
+        transition-all duration-200
+        hover:-translate-y-1 hover:shadow-lg hover:border-indigo-300
+        focus:outline-none focus:ring-2 focus:ring-indigo-400/60
+      `}
+    >
+      {/* small animated ring for highlight card */}
+      {highlight && (
+        <span className="absolute inset-0 rounded-2xl border border-indigo-400/40 animate-pulse pointer-events-none" />
+      )}
+
+      <div className="mb-3 flex items-center justify-center rounded-xl bg-slate-100 w-10 h-10 group-hover:bg-indigo-50 transition-colors">
+        <span className="text-slate-600 group-hover:text-indigo-600">
+          {icon}
+        </span>
+      </div>
+      <span className="text-xs font-medium text-slate-700">{label}</span>
+    </button>
   );
 }

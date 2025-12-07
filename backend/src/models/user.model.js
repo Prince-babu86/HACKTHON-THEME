@@ -10,7 +10,20 @@ const userSchema = new mongoose.Schema(
     username: { type: String, required: false, unique: true },
     bio: { type: String, default: "" },
     phone: { type: String, default: "" },
-    status: { type: String, enum: ["online", "offline", "busy"], default: "offline" },
+    status: {
+      type: String,
+      enum: ["online", "offline", "busy"],
+      default: "offline",
+    },
+
+    // followed channels
+
+    followedChannels: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Channel",
+      },
+    ],
   },
   { timestamps: true }
 );

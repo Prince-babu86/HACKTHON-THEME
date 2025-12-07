@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const authRoutes = require("./routes/auth.route");
 const indexRoutes = require("./routes/index.route");
+const channelRoute = require("./routes/channel.route");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const cors = require("cors");
@@ -22,5 +23,6 @@ app.use(passport.initialize());
 // routes would be added here in the future
 app.use("/auth", authRoutes);
 app.use("/", indexRoutes);
+app.use("/channel", channelRoute);
 
 module.exports = app;

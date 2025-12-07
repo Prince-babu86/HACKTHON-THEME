@@ -6,8 +6,9 @@ const {
 } = require("../controllers/auth.controller");
 const passport = require("passport");
 const authMiddleware = require("../middlewares/auth.middleware");
+const upload = require("../config/multer");
 const router = express.Router();
-const multer = require("multer");
+
 
 // Define your authentication routes here
 
@@ -35,7 +36,7 @@ router.get(
   googleAuthController
 );
 
-const upload = multer({storage: multer.memoryStorage()});
+
 
 
 

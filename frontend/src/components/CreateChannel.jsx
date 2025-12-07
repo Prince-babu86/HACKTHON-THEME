@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, ImagePlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import instance from "../config/axios.config";
 
 export default function CreateChannel() {
   const navigate = useNavigate();
@@ -13,12 +14,16 @@ export default function CreateChannel() {
     preview: "",
   });
 
+  const [file, setfile] = useState(null);
+  const [loader, setloader] = useState(false);
+
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
+    setfile(file);
     if (!file) return;
 
     setForm((prev) => ({
@@ -27,21 +32,54 @@ export default function CreateChannel() {
       preview: URL.createObjectURL(file),
     }));
   };
+  // make sure this is imported
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.name.trim()) return;
 
-    const payload = {
-      name: form.name.trim(),
-      description: form.description.trim(),
-      logo: form.logo, // send via FormData
-    };
+    try {
+      const formData = new FormData();
 
-    console.log("Create channel payload:", payload);
+      setloader(true);
+      // ✅ text fields
+      formData.append("name", form.name.trim());
+      formData.append("description", form.description.trim());
 
-    // TODO: API call here
+      // ✅ file (only if selected)
+      if (file) {
+        formData.append("logoUrl", file);
+      }
+
+      // ✅ API call
+      const res = await instance.post("/channel/create", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Channel created:", res.data);
+
+      // ✅ reset form
+      setForm({
+        name: "",
+        description: "",
+        logo: null,
+        preview: "",
+      });
+      setfile(null);
+
+      // ✅ redirect
+      navigate("/channels");
+    } catch (error) {
+      console.error(
+        "Create channel failed:",
+        error?.response?.data || error.message
+      );
+    } finally {
+      setloader(false);
+    }
   };
 
   return (
@@ -55,9 +93,7 @@ export default function CreateChannel() {
           <ArrowLeft size={20} className="text-gray-700" />
         </button>
 
-        <h1 className="text-lg font-semibold text-gray-900">
-          Create Channel
-        </h1>
+        <h1 className="text-lg font-semibold text-gray-900">Create Channel</h1>
       </div>
 
       {/* Content */}
@@ -122,13 +158,19 @@ export default function CreateChannel() {
 
         {/* Submit */}
         <div className="pt-4">
-          <button
-            type="submit"
-            disabled={!form.name.trim()}
-            className="w-full bg-indigo-600 text-white py-3 rounded-xl text-sm font-medium hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            Create Channel
-          </button>
+          {!loader ? (
+            <button
+              type="submit"
+              disabled={!form.name.trim()}
+              className="w-full bg-indigo-600 text-white py-3 rounded-xl text-sm font-medium hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              Create Channel
+            </button>
+          ) : (
+            <button className="w-full bg-indigo-600 flex items-center justify-center text-white py-3 rounded-xl text-sm font-medium hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed">
+              <div className="h-5 w-5 rounded-full border-2 border-white border-t-transparent animate-spin duration-1000"></div>
+            </button>
+          )}
         </div>
       </form>
     </div>

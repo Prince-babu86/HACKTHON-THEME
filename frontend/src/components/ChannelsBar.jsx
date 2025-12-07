@@ -1,7 +1,8 @@
 // ChannelsList.jsx
-import React, { useMemo, useState } from "react";
-import { Search, Plus } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Search, Plus, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import instance from "../config/axios.config";
 
 const joinedChannelsMock = [
   {
@@ -24,29 +25,29 @@ const joinedChannelsMock = [
   },
 ];
 
-const suggestedChannelsMock = [
-  {
-    id: 101,
-    name: "AI & ML",
-    logo: "https://ui-avatars.com/api/?name=AI&background=22c55e&color=fff",
-    description: "Everything about AI, ML, and LLMs.",
-  },
-  {
-    id: 102,
-    name: "Open Source",
-    logo: "https://ui-avatars.com/api/?name=OSS&background=f97316&color=fff",
-    description: "Contribute, collaborate, and learn in OSS.",
-  },
-  {
-    id: 103,
-    name: "Career & Growth",
-    logo: "https://ui-avatars.com/api/?name=Career&background=8b5cf6&color=fff",
-    description: "Internships, jobs, and growth tips.",
-  },
-];
-
 export default function ChannelsList() {
   const [search, setSearch] = useState("");
+  const [suggestedChannelsMock, setsuggestedChannelsMock] = useState([]);
+  const [loader, setloader] = useState(false);
+
+  const navigate = useNavigate();
+
+  const getAllChannels = async () => {
+    try {
+      setloader(true);
+      const res = await instance.get("/channel/all");
+      // make sure your backend returns { channels: [...] }
+      setsuggestedChannelsMock(res.data.channels || []);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setloader(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllChannels();
+  }, []);
 
   const joinedChannels = useMemo(() => {
     if (!search.trim()) return joinedChannelsMock;
@@ -64,25 +65,17 @@ export default function ChannelsList() {
     return suggestedChannelsMock.filter(
       (c) =>
         c.name.toLowerCase().includes(s) ||
-        c.description.toLowerCase().includes(s)
+        (c.description && c.description.toLowerCase().includes(s))
     );
-  }, [search]);
-
-
-  const navigate = useNavigate()
+  }, [search, suggestedChannelsMock]);
 
   const handleCreateClick = () => {
-    // just a placeholder
-    // you can open a different page, modal, or call a function from props here
-
-    console.log("Create channel clicked");
     navigate(`/channels/create`);
   };
 
-
-  const swithChannel = async (id) => {
-    navigate(`/channels/${id}`)
-  }
+  const swithChannel = (id) => {
+    navigate(`/channels/${id}`);
+  };
 
   return (
     <div className="w-full max-w-md min-h-screen border-r-2 border-gray-300 bg-white flex flex-col">
@@ -109,7 +102,7 @@ export default function ChannelsList() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 pb-3">
+      <div className="flex-1 max-h-[88vh] overflow-y-auto px-4 pb-3"> 
         {/* Joined channels */}
         <div className="mt-3">
           <h2 className="text-xs font-semibold text-gray-500 tracking-wide mb-2">
@@ -123,7 +116,11 @@ export default function ChannelsList() {
           ) : (
             <div className="space-y-2">
               {joinedChannels.map((channel) => (
-                <ChannelRow  key={channel.id} onselect={swithChannel} channel={channel} />
+                <ChannelRow
+                  key={channel.id}
+                  onselect={swithChannel}
+                  channel={channel}
+                />
               ))}
             </div>
           )}
@@ -135,14 +132,27 @@ export default function ChannelsList() {
             SUGGESTED CHANNELS
           </h2>
 
-          {suggestedChannels.length === 0 ? (
+          {/* Loader while fetching */}
+          {loader ? (
+            <div className="flex justify-center items-center py-6">
+              <Loader className="animate-spin text-gray-400" size={20} />
+              <span className="text-xs text-gray-500 ml-2">
+                Loading channels...
+              </span>
+            </div>
+          ) : suggestedChannels.length === 0 ? (
             <p className="text-xs text-gray-400 pl-1">
-              No suggested channels found for this search.
+              No suggested channels found{search ? " for this search." : "."}
             </p>
           ) : (
             <div className="space-y-2">
               {suggestedChannels.map((channel) => (
-                <ChannelRow key={channel.id}  channel={channel} suggested />
+                <ChannelRow
+                  key={channel._id || channel.id}
+                  channel={channel}
+                  suggested
+                  onselect={swithChannel}
+                />
               ))}
             </div>
           )}
@@ -152,21 +162,22 @@ export default function ChannelsList() {
   );
 }
 
-function ChannelRow({ channel, suggested = false , onselect }) {
+function ChannelRow({ channel, suggested = false, onselect }) {
+  const handleClick = () => {
+    // use _id from backend if exists, else fallback to id
+    const id = channel._id || channel.id;
+    if (onselect && id) {
+      onselect(id);
+    }
+  };
+
   return (
-    <div onClick={()=> onselect(channel.id)} className=" flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-gray-50 cursor-pointer transition">
-      <div  className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center shrink-0">
-        {channel.logo ? (
-          <img
-            src={channel.logo}
-            alt={channel.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-xs font-semibold text-gray-600">
-            {channel.name.charAt(0).toUpperCase()}
-          </span>
-        )}
+    <div
+      onClick={handleClick}
+      className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-gray-50 cursor-pointer transition"
+    >
+      <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center shrink-0">
+        {channel?.logoUrl ? <img className="h-full w-full rounded-full object-top object-cover" src={channel?.logoUrl}/> : <h4 className="flex text-sm font-semibold items-center justify-center uppercase">{channel?.name?.split(" ").filter(Boolean).slice(0,2).map(word => word[0]).join("")}</h4>}
       </div>
 
       <div className="flex-1 min-w-0">
