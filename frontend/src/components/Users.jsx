@@ -54,10 +54,10 @@ export default function Users() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-   const {profile , setProfile , loading} = useData();
-   const navigate = useNavigate();
+  const { profile, setProfile, loading } = useData();
+  const navigate = useNavigate();
 
-   const filtered = useMemo(() => {
+  const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return users;
     return users.filter(
@@ -67,16 +67,13 @@ export default function Users() {
     );
   }, [users, query]);
 
-   if(loading || !profile){
-    return <UsersSkeleton rows={6}/>;
-   }
+  if (loading || !profile) {
+    return <UsersSkeleton rows={6} />;
+  }
 
-
-   
-   const navigateChat =  (username) => {
-    navigate(`/chat/${username}`)
-   }
-  
+  const navigateChat = (username) => {
+    navigate(`/chat/${username}`);
+  };
 
   function handleAddUser() {
     // Quick demo: create a new user with timestamp id
@@ -84,7 +81,9 @@ export default function Users() {
     const newUser = {
       id,
       name: `New User ${id.slice(-4)}`,
-      avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70) + 1}`,
+      avatar: `https://i.pravatar.cc/150?img=${
+        Math.floor(Math.random() * 70) + 1
+      }`,
       lastMsg: "Say hi 👋",
       lastTime: "Now",
       unread: 1,
@@ -146,7 +145,7 @@ export default function Users() {
               const active = selectedId === user.id;
               return (
                 <li
-                onClick={()=>navigateChat(user.name)}
+                  onClick={() => navigateChat(user.name)}
                   key={user.id}
                   className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${
                     active ? "bg-indigo-50" : ""

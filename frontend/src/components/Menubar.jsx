@@ -9,12 +9,15 @@ import {
   Bell,
   Settings,
   User,
+  MessageCircleHeart,
+  MessageCircleXIcon,
+  MessageCircleMore,
 } from "lucide-react";
 
 const items = [
   { to: "/", label: "Home", Icon: Home },
   { to: "/chats", label: "Chats", Icon: MessageSquare },
-  { to: "/calls", label: "Calls", Icon: PhoneCall },
+  { to: "/channels", label: "Channels", Icon:MessageCircleMore  },
   { to: "/contacts", label: "Contacts", Icon: Users },
   { to: "/notifications", label: "Alerts", Icon: Bell },
 ];
