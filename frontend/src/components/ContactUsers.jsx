@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Search } from "lucide-react";
 import { useData } from "../context/DataContext";
 import Loader from '../loaders/UsersChatLoader'
+import { useNavigate } from "react-router-dom";
 
 export default function UsersList() {
   const [search, setSearch] = useState("");
   const { contactUsers , profile , loading} = useData();
-  console.log(profile);
+  // console.log(profile);
 
   // Dummy users (replace with API data)
   // const users = [
@@ -24,6 +25,13 @@ export default function UsersList() {
   );
 
   // console.log(contactUsers);
+
+  
+const navigate = useNavigate();
+
+ const navigateChat = (username) => {
+    navigate(`/contacts/chat/${username}`);
+  };
 
   const getRandomColor = (name) => {
   const colors = [
@@ -43,6 +51,9 @@ export default function UsersList() {
 if(loading || !contactUsers || !profile){
   return <Loader/>
 }
+
+
+
 
   return (
     <div className="w-lg mx-auto h-screen bg-white border border-gray-200 shadow-sm rounded-xl p-6">
@@ -64,6 +75,7 @@ if(loading || !contactUsers || !profile){
       <div className="space-y-3 overflow-y-auto h-[80vh] pr-2">
         {filtered.map((user) => (
           <div
+          onClick={()=>navigateChat(user?._id)}
             key={user?._id}
             className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-100 cursor-pointer transition"
           >

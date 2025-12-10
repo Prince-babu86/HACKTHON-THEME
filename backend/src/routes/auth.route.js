@@ -17,29 +17,30 @@ router.get("/", (req, res) => {
 });
 
 router.post("/register", registerUser);
-
-router.get(
-  "/google",
-  passport.authenticate("google", {
-     scope: ["profile", "email"],
-     accessType: "offline",
-     prompt: "consent",
-    
-    })
-);
-
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { 
-     failureRedirect:"http://localhost:5173/login",
-    session: false }),
-  googleAuthController
-);
-
-
-
-
-
 router.put("/profile/update" , authMiddleware , upload.single("profilePic") , updateProfile);
+
+// router.get(
+//   "/google",
+//   passport.authenticate("google", {
+//      scope: ["profile", "email"],
+//      accessType: "offline",
+//      prompt: "consent",
+    
+//     })
+// );
+
+// router.get(
+//   "/google/callback",
+//   passport.authenticate("google", { 
+//      failureRedirect:"http://localhost:5173/login",
+//     session: false }),
+//   googleAuthController
+// );
+
+
+
+
+
+
 
 module.exports = router;

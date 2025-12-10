@@ -4,6 +4,7 @@ import { Search, Plus, MoreVertical } from "lucide-react";
 import { useData } from "../context/DataContext";
 import UsersSkeleton from "../loaders/UsersChatLoader";
 import { useNavigate } from "react-router-dom";
+import instance from "../config/axios.config";
 
 /**
  * Chat-style Users sidebar component
@@ -100,6 +101,18 @@ export default function Users() {
       list.map((u) => (u.id === user.id ? { ...u, unread: 0 } : u))
     );
   }
+
+
+  const getConvention = async () => {
+    try {
+      let res = await instance.get("/chat/convo");
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  getConvention()
 
   return (
     <div className="h-screen w-[450px] bg-white border-r border-gray-200 flex flex-col">

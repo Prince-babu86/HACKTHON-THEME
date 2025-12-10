@@ -16,6 +16,9 @@ import Channels from "../pages/Channels";
 import CreateChannel from "../components/CreateChannel";
 import ChannelMessages from "../components/Showchannel";
 import ChannelsDiscoverEmpty from "../components/ChannelsBanner";
+import ChannelAbout from "../components/AboutChannel";
+import ChatEmptyBanner from "../components/Banner";
+import ChatUI from "../components/UserChat";
 
 const MainRoute = () => {
   return (
@@ -25,8 +28,23 @@ const MainRoute = () => {
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/settings/*" element={<Settings />} />
       <Route path="/notifications" element={<NotificationsPage />} />
-      <Route path="/contacts" element={<ContactPage />} />
+
+
+      <Route path="/contacts" element={<ContactPage />}> 
+      
+      <Route index element={<ChatEmptyBanner/>} />
+
+      <Route path="chat/:id" element={<ChatUI/>} />
+      </Route>
+
+
+
+
+
       <Route path="/chats" element={<AiChat />} />
+
+
+      
       <Route path="/chat/:username" element={<ChatUserPage />} />
 
       {/* ✅ CHANNEL ROUTES (NESTED) */}
@@ -39,6 +57,9 @@ const MainRoute = () => {
 
         {/* /channels/:id */}
         <Route path=":id" element={<ChannelMessages />} />
+
+        { /* /channels/about/:id  */}
+        <Route path="about/:id" element={<ChannelAbout/>}  />
       </Route>
     </Routes>
   );

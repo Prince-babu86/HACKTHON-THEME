@@ -3,7 +3,7 @@ import { Camera } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import HomePageLoader from "../../loaders/HomePageLoader";
 import instance from "../../config/axios.config";
-import Loader from '../../loaders/UpdateProfileLoader'
+import Loader from "../../loaders/UpdateProfileLoader";
 
 export default function ProfileSettings() {
   // const [profile, setProfile] = useState({
@@ -16,17 +16,15 @@ export default function ProfileSettings() {
   //   email: "johndoe@gmail.com",
   // });
 
-
-  const {profile , setProfile , loading} = useData();
-  const [file, setfile] = useState(null)
-  const [loader, setloader] = useState(false)
+  const { profile, setProfile, loading } = useData();
+  const [file, setfile] = useState(null);
+  const [loader, setloader] = useState(false);
 
   // const [, set] = useState(second)
 
-  if(loading || !profile){
+  if (loading || !profile) {
     // return <HomePageLoader/>;
   }
-
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
@@ -41,37 +39,37 @@ export default function ProfileSettings() {
     setProfile((p) => ({ ...p, [name]: value }));
   };
 
- const saveProfile = async () => {
-  try {
-    const formData = new FormData();
-    formData.append("fullname", profile.fullname);
-    formData.append("username", profile.username);
-    formData.append("bio", profile.bio);
-    formData.append("status", profile.status);
-    formData.append("phone", profile.phone);
+  const saveProfile = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("fullname", profile.fullname);
+      formData.append("username", profile.username);
+      formData.append("bio", profile.bio);
+      formData.append("status", profile.status);
+      formData.append("phone", profile.phone);
 
-    setloader(true);
+      setloader(true);
 
-    if (file) formData.append("profilePic", file); // multer file or file name same hona chahiye backend mein as well in upload.single("profilePic")
+      if (file) formData.append("profilePic", file); // multer file or file name same hona chahiye backend mein as well in upload.single("profilePic")
 
-    const res = await instance.put("/auth/profile/update", formData, {
-      headers:{"Content-Type":"multipart/form-data"},
-      withCredentials:true
-    });
-    setloader(false);
-    console.log(res.data);
-  } catch (err) {
-    console.log("ERR:", err.response?.data || err);
-    setloader(false);
-  }
-};
-
-  
+      const res = await instance.put("/auth/profile/update", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+      setloader(false);
+      console.log(res.data);
+    } catch (err) {
+      console.log("ERR:", err.response?.data || err);
+      setloader(false);
+    }
+  };
 
   return (
-    <div  className="w-[800px] mx-auto bg-white shadow-sm rounded-xl border border-gray-200 p-8">
+    <div className="w-[800px] mx-auto bg-white shadow-sm rounded-xl border border-gray-200 p-8">
       {loader && <Loader />}
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Profile Settings</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        Profile Settings
+      </h1>
 
       {/* Avatar */}
       <div className="flex items-center gap-6 mb-8">
@@ -83,7 +81,11 @@ export default function ProfileSettings() {
           />
           <label className="absolute bottom-0 right-0 bg-gray-800 p-2 rounded-full cursor-pointer hover:bg-gray-700">
             <Camera size={18} className="text-white" />
-            <input type="file" className="hidden" onChange={handleAvatarChange} />
+            <input
+              type="file"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
           </label>
         </div>
 
@@ -95,7 +97,6 @@ export default function ProfileSettings() {
 
       {/* Form */}
       <div className="space-y-5">
-
         {/* Name */}
         <div>
           <label className="text-sm text-gray-600 block mb-1">Full Name</label>
@@ -148,7 +149,9 @@ export default function ProfileSettings() {
 
         {/* Phone */}
         <div>
-          <label className="text-sm text-gray-600 block mb-1">Phone Number</label>
+          <label className="text-sm text-gray-600 block mb-1">
+            Phone Number
+          </label>
           <input
             name="phone"
             value={profile?.phone}
@@ -166,7 +169,6 @@ export default function ProfileSettings() {
             className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed"
           />
         </div>
-
       </div>
 
       {/* Buttons */}
@@ -175,7 +177,7 @@ export default function ProfileSettings() {
           Cancel
         </button>
         <button
-        disabled={loader}
+          disabled={loader}
           onClick={saveProfile}
           className="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
         >

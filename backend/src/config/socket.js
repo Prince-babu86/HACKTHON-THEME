@@ -1,6 +1,8 @@
 const { Server } = require("socket.io");
 const socketAuth = require("../middlewares/socket.middleware");
 const aiChatSocket = require("../controllers/aiChat.Controller");
+const { SendMessage } = require("../controllers/chat.controller");
+
 
 const initSocketServer = async (httpServer) => {
   // init io server
@@ -19,8 +21,21 @@ const initSocketServer = async (httpServer) => {
   io.on("connection", (socket) => {
     console.log(`New client connected: ${socket.id}`);
 
+
+   
+
     // ai-chatBot
     aiChatSocket(io, socket);
+
+
+     // join-chat
+
+    socket.on("join-chat" , (conversationId) => {
+      socket.join(conversationId);
+      console.log(`user join chat ${conversationId}`);
+    })
+    SendMessage(io , socket)
+    
   });
 };
 

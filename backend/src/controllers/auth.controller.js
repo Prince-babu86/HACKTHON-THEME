@@ -103,41 +103,41 @@ const loginUser = async (req, res) => {
 
 // google authentication controller
 
-const googleAuthController = async (req, res) => {
-  try {
-    const user = req.user; // Retrieved from Passport.js
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "8h",
-    });
+// const googleAuthController = async (req, res) => {
+//   try {
+//     const user = req.user; // Retrieved from Passport.js
+//     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+//       expiresIn: "8h",
+//     });
 
-    // Set cookie first
-    res.cookie("token", token, {
-      httpOnly: false, // true only if you do not need to access from frontend
-      secure: false,
-      sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
+//     // Set cookie first
+//     res.cookie("token", token, {
+//       httpOnly: false, // true only if you do not need to access from frontend
+//       secure: false,
+//       sameSite: "lax",
+//       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+//     });
 
-    console.log("Google login:", user.email);
+//     console.log("Google login:", user.email);
 
-    // await sendEmail(
-    //   user.email,
-    //   "Welcome to Our App",
-    //   `Hello ${user.fullname},\n\nThank you for signing up using Google authentication! We're excited to have you on board.\n\nBest regards,\nThe Team`,
-    //   registerSuccessEmail(
-    //     user.fullname,
-    //     "Hackthon Theme",
-    //     "ecomart-theta.vercel.app/"
-    //   )
-    // );
+//     // await sendEmail(
+//     //   user.email,
+//     //   "Welcome to Our App",
+//     //   `Hello ${user.fullname},\n\nThank you for signing up using Google authentication! We're excited to have you on board.\n\nBest regards,\nThe Team`,
+//     //   registerSuccessEmail(
+//     //     user.fullname,
+//     //     "Hackthon Theme",
+//     //     "ecomart-theta.vercel.app/"
+//     //   )
+//     // );
 
-    // redirect to frontend
-    return res.redirect("http://localhost:5173/");
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
+//     // redirect to frontend
+//     return res.redirect("http://localhost:5173/");
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({ message: "Server Error" });
+//   }
+// };
 
 const updateProfile = async (req, res) => {
   try {
@@ -145,27 +145,36 @@ const updateProfile = async (req, res) => {
     const data = req.body;
     const user = req.user;
 
+    let result = null; // ✅ yaha declare
+
     if (data.fullname) user.fullname = data.fullname;
     if (data.username) user.username = data.username;
     if (data.bio) user.bio = data.bio;
     if (data.phone) user.phone = data.phone;
     if (data.status) user.status = data.status;
+
     if (file) {
-      let result = await uploadImage(file.buffer, `${uuidv4()}`);
+      result = await uploadImage(file.buffer, `${uuidv4()}`);
       user.profilePic = result.url;
     }
 
     await user.save();
 
-    return res.json({ message: "File received", result, data });
+    return res.json({
+      message: "Profile updated successfully",
+      profilePic: user.profilePic,
+      data,
+    });
   } catch (error) {
+    console.error("Update profile error:", error); // ✅ log always
     return res.status(500).json({ message: "Server Error" });
   }
 };
 
+
 module.exports = {
   registerUser,
   loginUser,
-  googleAuthController,
+  // googleAuthController,
   updateProfile,
 };

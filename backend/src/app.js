@@ -3,6 +3,7 @@ const app = express();
 const authRoutes = require("./routes/auth.route");
 const indexRoutes = require("./routes/index.route");
 const channelRoute = require("./routes/channel.route");
+const chatRoute = require("./routes/chat.route");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const cors = require("cors");
@@ -16,13 +17,14 @@ app.use(
   })
 );
 
-require("./config/passport"); // Passport configuration
+// require("./config/passport"); // Passport configuration
 
-app.use(passport.initialize());
+// app.use(passport.initialize());
 
 // routes would be added here in the future
 app.use("/auth", authRoutes);
 app.use("/", indexRoutes);
 app.use("/channel", channelRoute);
+app.use("/chat" , chatRoute )
 
 module.exports = app;
